@@ -104,35 +104,32 @@ window.addEventListener("DOMContentLoaded", () => {
 
   //     Modal
 
-  const modalTrigger = document.querySelector("[data-modal]"),
-    modal = document.querySelector(".modal"),
-    modalCloseBtn = document.querySelector("[data-close]");
+  const modalTrigger = document.querySelectorAll("[data-modal]"),
+    modal = document.querySelector(".modal");
 
   function closModal() {
-    modal.classList.toggle("show");
+    // modal.classList.toggle("show");
     document.body.style.overflow = "";
-    // modal.classList.add('hide')
-    // modal.classList.remove('show')
+    modal.classList.add("hide");
+    modal.classList.remove("show");
   }
 
   function openModal() {
-    modal.classList.toggle("show");
+    // modal.classList.toggle("show");
     document.body.style.overflow = "hidden";
     clearInterval(modalTimerId);
-    // modal.classList.add('show')
-    // modal.classList.remove('hide')
+    modal.classList.add("show");
+    modal.classList.remove("hide");
   }
 
-  // modalTrigger.forEach((item) =>{
-  //     item.addEventListener('click', openModal)
-  // })
+  modalTrigger.forEach((item) => {
+    item.addEventListener("click", openModal);
+  });
 
-  modalTrigger.addEventListener("click", openModal);
-
-  modalCloseBtn.addEventListener("click", closModal);
+  // modalTrigger.addEventListener("click", openModal);
 
   modal.addEventListener("click", (e) => {
-    if (e.target == modal) {
+    if (e.target == modal || e.target.getAttribute("data-close") == "") {
       closModal();
     }
   });
@@ -233,57 +230,88 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Form
 
-  const form = document.querySelectorAll("form");
+  const forms = document.querySelectorAll("form");
 
-  form.forEach((form) => {
+  forms.forEach((form) => {
     postData(form);
   });
 
   const msg = {
-    loading: "Loading...",
-    success: "Thank's for submitting to our form",
-    failure: "Something went wrong",
+    loading: "/img/spinner.svg",
+    success: "That's for submit our form",
+    failure: "Somethng went wrong",
   };
 
   function postData(form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
-      const statusMessage = document.createElement("div");
-      statusMessage.textContent = msg.loading;
+      const statusMessage = document.createElement("img");
+      statusMessage.src = msg.loading;
+      statusMessage.style.cssText = `
+      display: block;
+      margin: 0 auto;
+      `;
       form.append(statusMessage);
+      // form.insertAdjacentElement("afterend", statusMessage);
 
       const request = new XMLHttpRequest();
       request.open("POST", "server.php");
 
-      // request.setRequestHeader('Content-Type', 'multipart/form-data')
-
-      request.setRequestHeader("Content-Type", "application/json");
+      request.setRequestHeader(
+        "Content-Type",
+        "application/json; charset=utf-8"
+      );
 
       const obj = {};
       const formData = new FormData(form);
-
       console.log(formData);
 
       formData.forEach((val, key) => {
         obj[key] = val;
       });
+
       const json = JSON.stringify(obj);
 
       request.send(json);
 
       request.addEventListener("load", () => {
         if (request.status == 200) {
-          console.log(request.response);
-          statusMessage.textContent = msg.success;
+          // console.log(request.response);
+          showThanksModal(msg.success);
           form.reset();
           setTimeout(() => {
             statusMessage.remove();
           }, 2000);
         } else {
-          statusMessage.textContent = msg.failure;
+          showThanksModal(msg.failure);
         }
       });
     });
+  }
+
+  function showThanksModal(message) {
+    const prevModalDialog = document.querySelector(".modal__dialog");
+
+    prevModalDialog.classList.add("hide");
+    openModal();
+
+    const thanksModal = document.createElement("div");
+    thanksModal.classList.add("modal__dialog");
+    thanksModal.innerHTML = `
+  <div class="modal__content">
+        <div data-close class="modal__close">&times;</div>
+        <div class="modal__title">${message}</div>
+  </div>
+  `;
+
+    document.querySelector(".modal").append(thanksModal);
+
+    setTimeout(() => {
+      thanksModal.remove();
+      prevModalDialog.classList.add("show");
+      prevModalDialog.classList.remove("hide");
+      closModal();
+    }, 3000);
   }
 });

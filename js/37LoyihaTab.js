@@ -200,40 +200,51 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  new MenuClass(
-    "img/tabs/1.png",
-    "vegy",
-    'Plan "Usual"',
-    " Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit nesciunt facere, sequi exercitationem praesentium ab cupiditate beatae debitis perspiciatis itaque quaerat id modi corporis delectus ratione nobis harum voluptatum in.",
-    10,
-    ".menu .container"
-    // "menu__item"
-  ).render();
-  new MenuClass(
-    "img/tabs/2.jpg",
-    "elite",
-    "Plan “Premium”",
-    " Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque aliquid molestiae, sit eveniet, tempora ipsum quaerat recusandae sapiente doloremque corporis dolores quas consectetur ut labore distinctio libero reiciendis harum sequi?",
-    15,
-    ".menu .container",
-    "menu__item"
-  ).render();
-  new MenuClass(
-    "img/tabs/3.jpg",
-    "post",
-    'Plan "VIP"',
-    "  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Voluptatibus natus nobis minus corporis atque enim vitae, modi eligendi commodi itaque voluptatum ipsum. Nemo reiciendis, id rem dolorum rerum consequuntur eos",
-    20,
-    ".menu .container",
-    "menu__item"
-  ).render();
+ async function getRecourse (url){
+    const req = await fetch(url)
+   return await  req.json()
+  }
+
+  getRecourse('http://localhost:3000/menu').then((data)=>{
+    data.forEach(({src,img,title,descr,price,})=>{
+      new MenuClass(src,img,title,descr,price, '.menu .container').render()
+    })
+  })
+
+  // new MenuClass(
+  //   "img/tabs/1.png",
+  //   "vegy",
+  //   'Plan "Usual"',
+  //   " Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit nesciunt facere, sequi exercitationem praesentium ab cupiditate beatae debitis perspiciatis itaque quaerat id modi corporis delectus ratione nobis harum voluptatum in.",
+  //   10,
+  //   ".menu .container"
+  //   // "menu__item"
+  // ).render();
+  // new MenuClass(
+  //   "img/tabs/2.jpg",
+  //   "elite",
+  //   "Plan “Premium”",
+  //   " Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque aliquid molestiae, sit eveniet, tempora ipsum quaerat recusandae sapiente doloremque corporis dolores quas consectetur ut labore distinctio libero reiciendis harum sequi?",
+  //   15,
+  //   ".menu .container",
+  //   "menu__item"
+  // ).render();
+  // new MenuClass(
+  //   "img/tabs/3.jpg",
+  //   "post",
+  //   'Plan "VIP"',
+  //   "  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Voluptatibus natus nobis minus corporis atque enim vitae, modi eligendi commodi itaque voluptatum ipsum. Nemo reiciendis, id rem dolorum rerum consequuntur eos",
+  //   20,
+  //   ".menu .container",
+  //   "menu__item"
+  // ).render();
 
   // Form
 
   const forms = document.querySelectorAll("form");
 
   forms.forEach((form) => {
-    postData(form);
+    bindPostData(form);
   });
 
   const msg = {
@@ -242,7 +253,19 @@ window.addEventListener("DOMContentLoaded", () => {
     failure: "Somethng went wrong",
   };
 
-  function postData(form) {
+  async function postData(url, data) {
+    const req = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: data,
+    });
+
+    return await req.json();
+  }
+
+  function bindPostData(form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
@@ -255,38 +278,44 @@ window.addEventListener("DOMContentLoaded", () => {
       form.append(statusMessage);
       // form.insertAdjacentElement("afterend", statusMessage);
 
-      const request = new XMLHttpRequest();
-      request.open("POST", "server.php");
+      // const request = new XMLHttpRequest();
+      // request.open("POST", "server.php");
 
-      request.setRequestHeader(
-        "Content-Type",
-        "application/json; charset=utf-8"
-      );
+      // request.setRequestHeader(
+      //   "Content-Type",
+      //   "application/json; charset=utf-8"
+      // );
 
-      const obj = {};
       const formData = new FormData(form);
-      console.log(formData);
 
-      formData.forEach((val, key) => {
-        obj[key] = val;
-      });
+      const json = JSON.stringify(Object.fromEntries(formData.entries()));
 
-      const json = JSON.stringify(obj);
-
-      request.send(json);
-
-      request.addEventListener("load", () => {
-        if (request.status == 200) {
-          // console.log(request.response);
+      postData(" http://localhost:3000/request ", json)
+        .then((data) => {
+          console.log(data);
           showThanksModal(msg.success);
           form.reset();
-          setTimeout(() => {
-            statusMessage.remove();
-          }, 2000);
-        } else {
+          statusMessage.remove();
+        })
+        .catch(() => {
           showThanksModal(msg.failure);
-        }
-      });
+        })
+        .finally(() => {
+          form.reset();
+        });
+
+      // request.addEventListener("load", () => {
+      //   if (request.status == 200) {
+      //     // console.log(request.response);
+      //     showThanksModal(msg.success);
+      //     form.reset();
+      //     setTimeout(() => {
+      //       statusMessage.remove();
+      //     }, 2000);
+      //   } else {
+      //     showThanksModal(msg.failure);
+      //   }
+      // });
     });
   }
 

@@ -1,21 +1,21 @@
 {
   "menu": [
     {
-      "img": "img/tabs/1.png",
+      "src": "img/tabs/1.png",
       "altimg": "vegy",
       "title": "Plan Usual",
       "descr": " Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit nesciunt facere, sequi exercitationem praesentium ab cupiditate beatae debitis perspiciatis itaque quaerat id modi corporis delectus ratione nobis harum voluptatum in.",
       "price": 10
     },
     {
-      "img": "img/tabs/2.jpg",
+      "src": "img/tabs/2.jpg",
       "altimg": "vegy",
       "title": "Plan Usual",
       "descr": " Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit nesciunt facere, sequi exercitationem praesentium ab cupiditate beatae debitis perspiciatis itaque quaerat id modi corporis delectus ratione nobis harum voluptatum in.",
       "price": 10
     },
     {
-      "img": "img/tabs/3.jpg",
+      "src": "img/tabs/3.jpg",
       "altimg": "vegy",
       "title": "Plan Usual",
       "descr": " Lorem ipsum, dolor sit amet consectetur adipisicing elit. Fugit nesciunt facere, sequi exercitationem praesentium ab cupiditate beatae debitis perspiciatis itaque quaerat id modi corporis delectus ratione nobis harum voluptatum in.",
@@ -50,6 +50,16 @@
       "name": "Suxrob",
       "phone": "998902476737",
       "id": 6
+    },
+    {
+      "name": "Suxrob",
+      "phone": "88902476737",
+      "id": 7
+    },
+    {
+      "name": "Suxrob",
+      "phone": "+998902476737",
+      "id": 8
     }
   ]
 }

@@ -200,16 +200,38 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
- async function getRecourse (url){
-    const req = await fetch(url)
-   return await  req.json()
-  }
+axios.get("http://localhost:3000/menu").then((data)=> {
+  // console.log(data.data)
+  data.data.forEach(({ src, altimg, title, descr, price }) => {
+    new MenuClass(
+        src,
+        altimg,
+        title,
+        descr,
+        price,
+        ".menu .container"
+    ).render();
+  });
+})
+  // bu yerdagi kod yuqorida axios bilan yozilgan
 
-  getRecourse('http://localhost:3000/menu').then((data)=>{
-    data.forEach(({src,img,title,descr,price,})=>{
-      new MenuClass(src,img,title,descr,price, '.menu .container').render()
-    })
-  })
+  // async function getRecourse(url) {
+  //   const req = await fetch(url);
+  //   return await req.json();
+  // }
+  //
+  // getRecourse("http://localhost:3000/menu").then((data) => {
+  //   data.forEach(({ src, altimg, title, descr, price }) => {
+  //     new MenuClass(
+  //       src,
+  //       altimg,
+  //       title,
+  //       descr,
+  //       price,
+  //       ".menu .container"
+  //     ).render();
+  //   });
+  // });
 
   // new MenuClass(
   //   "img/tabs/1.png",
@@ -262,6 +284,9 @@ window.addEventListener("DOMContentLoaded", () => {
       body: data,
     });
 
+    if(!req.ok){
+      throw new Error(`Could not fetch ${url}, status ${req.status}`)
+    }
     return await req.json();
   }
 
@@ -292,7 +317,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
       postData(" http://localhost:3000/request ", json)
         .then((data) => {
-          console.log(data);
+          // console.log(data);
           showThanksModal(msg.success);
           form.reset();
           statusMessage.remove();
@@ -343,4 +368,49 @@ window.addEventListener("DOMContentLoaded", () => {
       closModal();
     }, 3000);
   }
+
+//   slider
+  const sliders = document.querySelectorAll('.offer__slide'),
+      next = document.querySelector('.offer__slider-next'),
+      prev = document.querySelector('.offer__slider-prev'),
+      current = document.querySelector('#current'),
+      total = document.querySelector('#total')
+
+
+  let sladeIndex = 1
+
+  showSlider(sladeIndex)
+
+  if(sliders.length < 10){
+    total.textContent = ` 0${sliders.length}`
+  }else {
+    total.textContent = sliders.length
+  }
+  function showSlider(idx){
+    if(idx > sliders.length){
+      sladeIndex = 1
+    } else if(idx < 0){
+      sladeIndex = sliders.length
+    }
+    sliders.forEach((item)=> item.style.display = 'none')
+    sliders[sladeIndex - 1].style.display = 'block'
+
+    if(sliders.length < 10){
+      current.textContent = ` 0${sladeIndex}`
+    }else {
+      current.textContent = sladeIndex
+    }
+  }
+
+  function plusSlider(idx){
+    showSlider(sladeIndex +=idx)
+  }
+
+   next.addEventListener('click', ()=>{
+      plusSlider(1)
+    })
+  prev.addEventListener('click',()=>{
+    plusSlider(-1)
+  })
+
 });

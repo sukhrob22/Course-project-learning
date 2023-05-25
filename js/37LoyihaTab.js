@@ -200,19 +200,19 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-axios.get("http://localhost:3000/menu").then((data)=> {
-  // console.log(data.data)
-  data.data.forEach(({ src, altimg, title, descr, price }) => {
-    new MenuClass(
+  axios.get("http://localhost:3000/menu").then((data) => {
+    // console.log(data.data)
+    data.data.forEach(({ src, altimg, title, descr, price }) => {
+      new MenuClass(
         src,
         altimg,
         title,
         descr,
         price,
         ".menu .container"
-    ).render();
+      ).render();
+    });
   });
-})
   // bu yerdagi kod yuqorida axios bilan yozilgan
 
   // async function getRecourse(url) {
@@ -284,8 +284,8 @@ axios.get("http://localhost:3000/menu").then((data)=> {
       body: data,
     });
 
-    if(!req.ok){
-      throw new Error(`Could not fetch ${url}, status ${req.status}`)
+    if (!req.ok) {
+      throw new Error(`Could not fetch ${url}, status ${req.status}`);
     }
     return await req.json();
   }
@@ -369,48 +369,164 @@ axios.get("http://localhost:3000/menu").then((data)=> {
     }, 3000);
   }
 
-//   slider
-  const sliders = document.querySelectorAll('.offer__slide'),
-      next = document.querySelector('.offer__slider-next'),
-      prev = document.querySelector('.offer__slider-prev'),
-      current = document.querySelector('#current'),
-      total = document.querySelector('#total')
+  //   slider
 
+  const slider = document.querySelectorAll(".offer__slide"),
+    next = document.querySelector(".offer__slider-next"),
+    prev = document.querySelector(".offer__slider-prev"),
+    current = document.querySelector("#current"),
+    total = document.querySelector("#total"),
+    sliderWrapper = document.querySelector(".offer__slider-wrapper"),
+    sliderField = document.querySelector(".offer__slider-inner"),
+    width = window.getComputedStyle(sliderWrapper).width,
+    slide = document.querySelector(".offer__slider");
 
-  let sladeIndex = 1
+  // console.log(Math.floor(width.slice(0,width.length - 2)))
+  let sliedrIndex = 1;
+  let offset = 0;
 
-  showSlider(sladeIndex)
+  // -----*********************-------------
+  //            carusel slider
+  // -----*********************-------------
 
-  if(sliders.length < 10){
-    total.textContent = ` 0${sliders.length}`
-  }else {
-    total.textContent = sliders.length
+  if (slider.length < 10) {
+    total.textContent = `0${slider.length}`;
+    current.textContent = `0${sliedrIndex}`;
+  } else {
+    total.textContent = slider.length;
+    current.textContent = sliedrIndex;
   }
-  function showSlider(idx){
-    if(idx > sliders.length){
-      sladeIndex = 1
-    } else if(idx < 0){
-      sladeIndex = sliders.length
+
+  sliderField.style.width = 100 * slider.length + "%";
+  sliderField.style.display = "flex";
+  sliderField.style.transition = ".5s ease all";
+  sliderWrapper.style.overflow = "hidden";
+
+  slider.forEach((slide) => {
+    slide.style.width = width;
+  });
+
+  const indecators = document.createElement("ol");
+  indecators.classList.add("carousel-indecators");
+  slide.append(indecators);
+
+  const dots = [];
+
+  for (let i = 0; i < slider.length; i++) {
+    const dot = document.createElement("li");
+    dot.setAttribute("data-slide-to", i + 1);
+    dot.classList.add("carousel-dot");
+    if (i == 0) {
+      dot.style.opacity = 1;
     }
-    sliders.forEach((item)=> item.style.display = 'none')
-    sliders[sladeIndex - 1].style.display = 'block'
+    indecators.append(dot);
+    dots.push(dot);
+  }
 
-    if(sliders.length < 10){
-      current.textContent = ` 0${sladeIndex}`
-    }else {
-      current.textContent = sladeIndex
+  next.addEventListener("click", () => {
+    if (offset == +width.slice(0, width.length - 2) * (slider.length - 1)) {
+      offset = 0;
+    } else {
+      offset += +width.slice(0, width.length - 2);
     }
-  }
+    sliderField.style.transform = `translateX(-${offset}px)`;
 
-  function plusSlider(idx){
-    showSlider(sladeIndex +=idx)
-  }
+    if (sliedrIndex == slider.length) {
+      sliedrIndex = 1;
+    } else {
+      sliedrIndex++;
+    }
 
-   next.addEventListener('click', ()=>{
-      plusSlider(1)
-    })
-  prev.addEventListener('click',()=>{
-    plusSlider(-1)
-  })
+    if (slider.length < 10) {
+      current.textContent = `0${sliedrIndex}`;
+    } else {
+      current.textContent = sliedrIndex;
+    }
 
+    dots.forEach((dot) => (dot.style.opacity = 0.5));
+    dots[sliedrIndex - 1].style.opacity = 1;
+  });
+
+  prev.addEventListener("click", () => {
+    if (offset == 0) {
+      offset = +width.slice(0, width.length - 2) * (slider.length - 1);
+    } else {
+      offset -= +width.slice(0, width.length - 2);
+    }
+    sliderField.style.transform = `translateX(-${offset}px)`;
+
+    if (sliedrIndex == 1) {
+      sliedrIndex = slider.length;
+    } else {
+      sliedrIndex--;
+    }
+
+    if (slider.length < 10) {
+      current.textContent = `0${sliedrIndex}`;
+    } else {
+      current.textContent = sliedrIndex;
+    }
+
+    dots.forEach((dot) => (dot.style.opacity = 0.5));
+    dots[sliedrIndex - 1].style.opacity = 1;
+  });
+
+  dots.forEach((dot) => {
+    dot.addEventListener("click", (e) => {
+      const slideTo = e.target.getAttribute("data-slide-to");
+
+      sliedrIndex = slideTo;
+      offset = +width.slice(0, width.length - 2) * (slideTo - 1);
+      sliderField.style.transform = `translateX(-${offset}px)`;
+
+      if (slider.length < 10) {
+        current.textContent = `0${sliedrIndex}`;
+      } else {
+        current.textContent = sliedrIndex;
+      }
+
+      dots.forEach((dot) => (dot.style.opacity = 0.5));
+      dots[sliedrIndex - 1].style.opacity = 1;
+    });
+  });
+  // -----*********************-------------
+  //            Easy slider
+  // -----*********************-------------
+
+  // showsSlider(sliedrIndex)
+  //
+  // if(slider.length < 10){
+  //   total.textContent =`0${slider.length}`
+  // }else{
+  //   total.textContent = slider.length
+  // }
+  //
+  // function showsSlider (idx){
+  //   if(idx > slider.length){
+  //     sliedrIndex = 1
+  //   }
+  //   if(idx < 0){
+  //     sliedrIndex = slider.length
+  //   }
+  //
+  //   slider.forEach(item => item.style.display = 'none')
+  //   slider[sliedrIndex -1].style.display = 'block'
+  //
+  //   if(slider.length < 10){
+  //     current.textContent =`0${sliedrIndex}`
+  //   }else{
+  //     current.textContent = sliedrIndex
+  //   }
+  // }
+  //
+  // function plusSlider(idx){
+  //   showsSlider(sliedrIndex +=idx)
+  // }
+  // next.addEventListener('click', ()=>{
+  //   plusSlider(1)
+  // })
+  //
+  // prev.addEventListener('click', ()=>{
+  //   plusSlider(-1)
+  // })
 });

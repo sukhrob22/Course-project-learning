@@ -10,6 +10,9 @@
     "type": "git",
     "url": "git+https://github.com/sukhrob22/Course-project.git"
   },
+  "browserslist": [
+    "> 1%"
+  ],
   "author": "Suxrob Eragshev",
   "license": "ISC",
   "bugs": {
@@ -17,6 +20,15 @@
   },
   "homepage": "https://github.com/sukhrob22/Course-project#readme",
   "devDependencies": {
+    "@babel/cli": "^7.21.5",
+    "@babel/core": "^7.22.1",
+    "@babel/preset-env": "^7.22.2",
     "json-server": "^0.17.3"
+  },
+  "dependencies": {
+    "babel-loader": "^9.1.2",
+    "core-js": "^3.30.2",
+    "webpack": "^5.84.1",
+    "webpack-cli": "^5.1.1"
   }
 }
